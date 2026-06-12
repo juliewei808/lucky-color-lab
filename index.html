@@ -49,7 +49,25 @@
     padding:32px 20px 60px;
   }
   header{text-align:center;margin-bottom:24px;}
-  header .icon-row{font-size:36px;margin-bottom:6px;}
+  header .icon-row{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:64px;
+    height:64px;
+    margin:0 auto 10px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--pink),var(--sky));
+    box-shadow:var(--shadow);
+    font-size:30px;
+  }
+  header .icon-row .spark{
+    position:absolute;
+    font-size:14px;
+  }
+  header .icon-row .spark1{top:-4px;right:-6px;}
+  header .icon-row .spark2{bottom:-2px;left:-8px;font-size:11px;}
   h1{
     font-size:28px;
     font-weight:900;
@@ -86,6 +104,9 @@
   }
   input[type="date"]{
     width:100%;
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
     padding:12px 14px;
     border-radius:16px;
     border:2px solid #F0E4DA;
@@ -95,6 +116,12 @@
     background:#fff;
   }
   input[type="date"]:focus{outline:none;border-color:#FFC2D1;}
+
+  @media (max-width:380px){
+    .wrap{padding:24px 12px 50px;}
+    .card{padding:16px;}
+    input[type="date"]{padding:10px 8px;font-size:14px;}
+  }
 
   .options{
     display:grid;
@@ -415,7 +442,7 @@
     <div class="lang-switch"><a href="index-en.html">English 🇺🇸</a></div>
 
     <header>
-      <div class="icon-row">🍀🌈💝</div>
+      <div class="icon-row">🌈<span class="spark spark1">✨</span><span class="spark spark2">⭐</span></div>
       <h1>好運色彩研究室</h1>
       <p>輸入你的生日，找出專屬的「五行屬性」，<br>再依照你最想提升的運勢，挑出今天就能用上的幸運色與幸運小物。</p>
     </header>
