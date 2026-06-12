@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky Color Lab | Five Elements Lucky Color Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#FFD9E3;
+    --peach:#FFE3CF;
+    --mint:#D7F3EA;
+    --sky:#DCEEFB;
+    --lavender:#E6DEFB;
+    --cream:#FFFBF5;
+    --ink:#5A4A42;
+    --ink-soft:#8C7B72;
+    --shadow: 0 8px 24px rgba(180, 150, 130, 0.18);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Zen Maru Gothic','PingFang TC','Microsoft JhengHei',sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,#FFF6EC 0%, #EAF6F2 50%, #EAF1FB 100%);
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(40px);
+    opacity:0.55;
+    z-index:0;
+  }
+  .blob1{width:280px;height:280px;background:var(--pink);top:-80px;left:-80px;}
+  .blob2{width:340px;height:340px;background:var(--sky);top:120px;right:-120px;}
+  .blob3{width:260px;height:260px;background:var(--mint);bottom:-60px;left:10%;}
+  .blob4{width:220px;height:220px;background:var(--lavender);bottom:80px;right:5%;}
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:640px;
+    margin:0 auto;
+    padding:32px 20px 60px;
+  }
+  header{text-align:center;margin-bottom:24px;}
+  header .icon-row{font-size:36px;margin-bottom:6px;}
+  h1{
+    font-size:28px;
+    font-weight:900;
+    margin:0 0 8px;
+    color:#7A5C52;
+  }
+  header p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:14px;
+    line-height:1.7;
+  }
+
+  .card{
+    background:var(--cream);
+    border-radius:28px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:20px;
+  }
+  .card h2{
+    font-size:18px;
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  label.field-label{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:#7A5C52;
+  }
+  input[type="date"]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:16px;
+    border:2px solid #F0E4DA;
+    font-family:inherit;
+    font-size:16px;
+    color:var(--ink);
+    background:#fff;
+  }
+  input[type="date"]:focus{outline:none;border-color:#FFC2D1;}
+
+  .options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:16px;
+  }
+  .option{
+    border:2px solid #F0E4DA;
+    background:#fff;
+    border-radius:18px;
+    padding:14px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    user-select:none;
+  }
+  .option .emoji{font-size:26px;display:block;margin-bottom:6px;}
+  .option .label{font-size:14px;font-weight:700;}
+  .option .sub{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .option:hover{transform:translateY(-2px);}
+  .option.selected{
+    border-color:#FFC2D1;
+    background:linear-gradient(135deg,#FFF1F5,#FFF8EF);
+    transform:translateY(-2px);
+  }
+
+  .submit-btn{
+    display:block;
+    width:100%;
+    margin-top:20px;
+    padding:16px;
+    border:none;
+    border-radius:999px;
+    background:linear-gradient(135deg,#FFB6C9,#FFD9A0);
+    color:#6B4A3A;
+    font-family:inherit;
+    font-size:17px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(255,182,193,0.5);
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .submit-btn:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 10px 20px rgba(255,182,193,0.6);}
+  .submit-btn:active{transform:translateY(0) scale(0.99);}
+  .submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+
+  /* result */
+  #result{display:none;}
+  #result.show{display:block;animation:fadeUp 0.5s ease;}
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .day-master{
+    text-align:center;
+    padding:18px 0 8px;
+  }
+  .day-master .big-emoji{font-size:48px;display:block;margin-bottom:6px;}
+  .day-master .stem{
+    font-size:30px;
+    font-weight:900;
+    color:#7A5C52;
+  }
+  .day-master .desc{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:6px;
+    line-height:1.7;
+  }
+
+  .divider{
+    border:none;
+    border-top:2px dashed #F0E4DA;
+    margin:18px 0;
+  }
+
+  .target-block{margin-bottom:18px;}
+  .target-block:last-child{margin-bottom:0;}
+  .target-block .ten-god{
+    display:inline-block;
+    font-size:12px;
+    font-weight:700;
+    color:#A1786B;
+    background:#FBEFE8;
+    border-radius:999px;
+    padding:3px 12px;
+    margin-bottom:8px;
+  }
+  .palette-name{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+
+  .mini-palette{
+    display:flex;
+    height:18px;
+    border-radius:9px;
+    overflow:hidden;
+    margin-bottom:14px;
+    border:1px solid rgba(0,0,0,0.05);
+  }
+  .mini-palette span{
+    flex:1;
+  }
+
+  .color-highlights{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .color-card{
+    flex:1;
+    min-width:96px;
+    border-radius:18px;
+    overflow:hidden;
+    border:2px solid rgba(0,0,0,0.05);
+    box-shadow:0 4px 10px rgba(0,0,0,0.06);
+  }
+  .color-card .block{
+    height:64px;
+    display:flex;
+    align-items:flex-end;
+    padding:6px 8px;
+  }
+  .color-card .block .cname{
+    font-size:13px;
+    font-weight:900;
+    line-height:1.3;
+  }
+  .color-card .meta{
+    background:#fff;
+    padding:6px 8px;
+  }
+  .color-card .cen{
+    font-size:10px;
+    color:var(--ink-soft);
+    display:block;
+  }
+  .color-card .chex{
+    font-size:10px;
+    color:var(--ink-soft);
+    font-family:monospace;
+    display:block;
+    margin-top:1px;
+  }
+
+  .reroll-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:10px;
+    padding:7px 16px;
+    border:2px solid #F0E4DA;
+    border-radius:999px;
+    background:#fff;
+    color:#A1786B;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .reroll-btn:hover{background:#FBEFE8;}
+
+  .palette-details{
+    margin-top:12px;
+  }
+  .palette-details summary{
+    cursor:pointer;
+    font-size:12px;
+    font-weight:700;
+    color:#A1786B;
+    list-style:none;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 0;
+  }
+  .palette-details summary::-webkit-details-marker{display:none;}
+  .palette-details summary::before{
+    content:'▸';
+    transition:transform 0.15s ease;
+    display:inline-block;
+  }
+  .palette-details[open] summary::before{
+    transform:rotate(90deg);
+  }
+  .palette-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px 6px;
+    margin-top:10px;
+  }
+  .palette-swatch{
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid rgba(0,0,0,0.05);
+  }
+  .palette-swatch .chip{
+    height:40px;
+    display:flex;
+    align-items:flex-end;
+    padding:4px 6px;
+  }
+  .palette-swatch .pname{
+    font-size:10px;
+    font-weight:700;
+    line-height:1.2;
+  }
+  .palette-swatch .pmeta{
+    background:#fff;
+    padding:3px 6px 5px;
+  }
+  .palette-swatch .pen{
+    font-size:8px;
+    color:var(--ink-soft);
+    display:block;
+  }
+  .palette-swatch .phex{
+    font-size:8px;
+    color:var(--ink-soft);
+    font-family:monospace;
+    display:block;
+  }
+
+  .items-list{
+    list-style:none;
+    padding:0;
+    margin:10px 0 0;
+    display:grid;
+    gap:8px;
+  }
+  .items-list li{
+    background:#fff;
+    border-radius:14px;
+    padding:10px 14px;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1.5px solid #F4EAE2;
+  }
+  .items-list .ie{font-size:18px;}
+
+  .reset-btn{
+    display:block;
+    width:100%;
+    margin-top:22px;
+    padding:13px;
+    border:2px solid #F0E4DA;
+    border-radius:999px;
+    background:#fff;
+    color:#A1786B;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .reset-btn:hover{background:#FBEFE8;}
+
+  .lang-switch{
+    text-align:center;
+    margin-bottom:14px;
+    font-size:12px;
+  }
+  .lang-switch a{
+    color:#A1786B;
+    text-decoration:none;
+    font-weight:700;
+    border:2px solid #F0E4DA;
+    background:#fff;
+    border-radius:999px;
+    padding:6px 16px;
+    display:inline-block;
+  }
+  .lang-switch a:hover{background:#FBEFE8;}
+
+  .related-card{text-align:center;}
+  .related-card p{
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.7;
+    margin:0 0 14px;
+  }
+  .related-btn{
+    display:inline-block;
+    padding:12px 28px;
+    border-radius:999px;
+    background:linear-gradient(135deg,var(--lavender),var(--sky));
+    color:#5A4A42;
+    font-weight:700;
+    font-size:14px;
+    text-decoration:none;
+    box-shadow:0 6px 16px rgba(180,150,130,0.18);
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .related-btn:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 10px 20px rgba(180,150,130,0.25);}
+
+  footer{
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:10px;
+    line-height:1.8;
+  }
+</style>
+</head>
+<body>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="blob blob4"></div>
+
+  <div class="wrap">
+    <div class="lang-switch"><a href="index.html">中文版 🇹🇼</a></div>
+
+    <header>
+      <div class="icon-row">🍀🌈💝</div>
+      <h1>Lucky Color Lab</h1>
+      <p>Enter your birth date to discover your personal "Five Elements" type,<br>then pick the area of luck you most want to boost — and get lucky colors and lucky items you can use today.</p>
+    </header>
+
+    <div class="card">
+      <h2>① When's your birthday?</h2>
+      <label class="field-label" for="birthdate">Date of birth (Gregorian calendar)</label>
+      <input type="date" id="birthdate" min="1900-01-01" max="2099-12-31">
+      <p class="hint">Note: this quiz uses the Five Element of your "Day Master" (日柱) — just enter the correct Gregorian date, no birth time needed.</p>
+    </div>
+
+    <div class="card">
+      <h2>② Which luck do you want to boost?</h2>
+      <div class="options" id="categoryOptions">
+        <div class="option" data-value="wealth">
+          <span class="emoji">💰</span>
+          <span class="label">Wealth</span>
+          <span class="sub">Income &amp; gains</span>
+        </div>
+        <div class="option" data-value="career">
+          <span class="emoji">💼</span>
+          <span class="label">Career</span>
+          <span class="sub">Work &amp; promotion</span>
+        </div>
+        <div class="option" data-value="study">
+          <span class="emoji">📚</span>
+          <span class="label">Study / Exams</span>
+          <span class="sub">Learning &amp; focus</span>
+        </div>
+        <div class="option" data-value="overall">
+          <span class="emoji">✨</span>
+          <span class="label">Overall Boost</span>
+          <span class="sub">All-around luck</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" disabled>Reveal my lucky colors 🎨</button>
+    </div>
+
+    <div class="card" id="result">
+      <div class="day-master">
+        <span class="big-emoji" id="rEmoji">🌳</span>
+        <div class="stem" id="rStem">Jiǎ Wood</div>
+        <div class="desc" id="rDesc">Like a tall tree, full of vitality, growth, and momentum.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div id="targets"></div>
+
+      <button class="reset-btn" id="resetBtn">Take the quiz again</button>
+    </div>
+
+    <div class="card related-card">
+      <h2>🔮 You Might Also Like</h2>
+      <p>Lucky colors are just the start! Curious about your innate talents and career potential? Try the Eastern Archetype Talent Analysis~</p>
+      <a class="related-btn" href="https://juliewei808.github.io/bazi-analysis/bazi_homepage_2_2.html" target="_blank" rel="noopener noreferrer">Explore Eastern Archetype Analysis →</a>
+    </div>
+
+    <footer>
+      ※ This quiz estimates your Five Elements type from your Day Master's heavenly stem, and matches colors using the Five Elements' generating/overcoming relationships (Wealth／Authority／Output／Resource).<br>
+      Results are for fun and inspiration only — try these lucky colors in your outfits, accessories, or home decor 🌈
+    </footer>
+  </div>
+
+<script>
+  const stems = ['Jiǎ','Yǐ','Bǐng','Dīng','Wù','Jǐ','Gēng','Xīn','Rén','Guǐ'];
+  const stemElement = ['木','木','火','火','土','土','金','金','水','水'];
+  const elementEnName = {'木':'Wood','火':'Fire','土':'Earth','金':'Metal','水':'Water'};
+
+  const elementData = {
+    '木': {
+      emoji: '🌳',
+      desc: 'Like a tall tree, full of vitality — you love growth, breakthroughs, and taking action.',
+      paletteName: 'Jade & Cyan-Greens',
+      palette: [
+        {name:'Jade Green', en:'翠青', hex:'#00A86B'},
+        {name:'Sea Green', en:'海綠', hex:'#2E8B57'},
+        {name:'Cyan Green', en:'青綠', hex:'#4CAF82'},
+        {name:'Teal', en:'青色', hex:'#008080'},
+        {name:'Light Teal', en:'淺青', hex:'#20B2AA'},
+        {name:'Spring Green', en:'嫩綠', hex:'#78C850'},
+        {name:'Light Green', en:'淡嫩綠', hex:'#90EE90'},
+        {name:'Lawn Green', en:'草坪綠', hex:'#7CFC00'},
+        {name:'Grass Green', en:'草綠', hex:'#4DB340'},
+        {name:'GreenYellow', en:'黃草綠', hex:'#ADFF2F'},
+        {name:'Bamboo', en:'竹青', hex:'#6BAF92'},
+        {name:'Pine Green', en:'松綠', hex:'#507D5F'},
+        {name:'Sage', en:'蒼青', hex:'#5F8575'},
+        {name:'Dark Sea Green', en:'暗海綠', hex:'#8FBC8F'},
+        {name:'Medium Green', en:'中海綠', hex:'#3CB371'},
+        {name:'Forest Green', en:'森林綠', hex:'#3A7D44'},
+        {name:'Forest', en:'林綠', hex:'#228B22'},
+        {name:'Dark Green', en:'墨綠', hex:'#1B4332'},
+        {name:'Dark Green', en:'暗綠', hex:'#006400'},
+        {name:'Jungle', en:'極深綠', hex:'#0D3320'}
+      ],
+      items: [
+        {emoji:'📿', text:'Wooden bead jewelry or bracelets'},
+        {emoji:'🪑', text:'Wooden furniture'},
+        {emoji:'🐉', text:'Wood-material zodiac figurines (Dragon, Rat, Tiger, Rabbit, Goat, Pig)'},
+        {emoji:'🪴', text:'Indoor plants or small potted greenery (pothos, evergreen, etc.)'},
+        {emoji:'📗', text:'Green stationery, notebooks, or clothing accessories'}
+      ]
+    },
+    '火': {
+      emoji: '🔥',
+      desc: 'Like sunlight, warm and outgoing, full of energy — often the center of attention.',
+      paletteName: 'Reds & Crimsons',
+      palette: [
+        {name:'Pure Red', en:'正紅', hex:'#FF0000'},
+        {name:'Vermillion', en:'朱紅', hex:'#E34234'},
+        {name:'Crimson', en:'緋紅', hex:'#DC143C'},
+        {name:'Scarlet', en:'烈焰紅', hex:'#FF2400'},
+        {name:'Dan Red', en:'丹紅', hex:'#CC0000'},
+        {name:'Dark Red', en:'暗紅', hex:'#8B0000'},
+        {name:'Maroon', en:'栗紅', hex:'#800000'},
+        {name:'Wine Red', en:'葡萄酒', hex:'#722F37'},
+        {name:'Carmine', en:'胭脂紅', hex:'#9B1B30'},
+        {name:'Oxblood', en:'血石紅', hex:'#5C0120'},
+        {name:'OrangeRed', en:'橙紅', hex:'#FF4500'},
+        {name:'Flame', en:'火焰橙', hex:'#FF6B35'},
+        {name:'Dark Orange', en:'深橙', hex:'#FF8C00'},
+        {name:'Amber', en:'琥珀橙', hex:'#FF9A00'},
+        {name:'Deep Coral', en:'珊瑚橙', hex:'#FF7043'},
+        {name:'Magenta', en:'品紅', hex:'#C2185B'},
+        {name:'Rose Red', en:'玫瑰紅', hex:'#E8436B'},
+        {name:'Rouge', en:'胭脂', hex:'#C0143C'},
+        {name:'Deep Pink', en:'深粉紅', hex:'#FF1493'},
+        {name:'Peony', en:'牡丹紅', hex:'#AD1457'}
+      ],
+      items: [
+        {emoji:'🧿', text:'Coral, amber, jade, or beeswax jewelry'},
+        {emoji:'📿', text:'Wooden bead jewelry'},
+        {emoji:'🐴', text:'Wood-material zodiac figurines (Horse, Tiger, Dog, Rabbit, Goat, Snake)'},
+        {emoji:'🕯️', text:'Red candles, fragrance, or lamps'},
+        {emoji:'🔺', text:'Triangular or pointed-shape accessories and decor'}
+      ]
+    },
+    '土': {
+      emoji: '⛰️',
+      desc: 'Like the earth, steady and dependable — the reliable support everyone counts on.',
+      paletteName: 'Earth Tones & Browns',
+      palette: [
+        {name:'Earth Yellow', en:'土黃', hex:'#E8B84B'},
+        {name:'Pure Yellow', en:'正黃', hex:'#F5C842'},
+        {name:'Turmeric', en:'薑黃', hex:'#D4A017'},
+        {name:'Wheat Gold', en:'麥黃', hex:'#C9A84C'},
+        {name:'Khaki', en:'卡其黃', hex:'#F0E68C'},
+        {name:'Sienna', en:'赭褐', hex:'#A0522D'},
+        {name:'Saddle Brown', en:'鞍棕', hex:'#8B4513'},
+        {name:'Terracotta', en:'赤陶', hex:'#C4922A'},
+        {name:'Chocolate', en:'巧克力', hex:'#D2691E'},
+        {name:'Camel', en:'駝色', hex:'#BC8A5F'},
+        {name:'Wheat', en:'小麥色', hex:'#F5DEB3'},
+        {name:'Antique White', en:'古董白', hex:'#FAEBD7'},
+        {name:'Moccasin', en:'莫卡辛', hex:'#FFE4B5'},
+        {name:'Burlywood', en:'原木', hex:'#DEB887'},
+        {name:'Tan', en:'棕褐沙', hex:'#D2B48C'},
+        {name:'Dark Mud', en:'深泥褐', hex:'#5A3A0A'},
+        {name:'Rock Brown', en:'岩褐', hex:'#4A3000'},
+        {name:'Chestnut', en:'栗色', hex:'#6B4226'},
+        {name:'Dark Rock', en:'深棕岩', hex:'#3D2B1F'},
+        {name:'Brick', en:'磚色', hex:'#795548'}
+      ],
+      items: [
+        {emoji:'💎', text:'Coral, amber, jade, beeswax, or crystal jewelry'},
+        {emoji:'🏺', text:'Porcelain or ceramics'},
+        {emoji:'🐎', text:'Clay-material zodiac figurines (Horse, Tiger, Dog, Goat, Snake)'},
+        {emoji:'🟫', text:'Square or rectangular storage boxes and accessories'},
+        {emoji:'☕', text:'Ceramic cups and tableware'}
+      ]
+    },
+    '金': {
+      emoji: '⚙️',
+      desc: 'Like metal, strong-willed and decisive — values principle, structure, and efficiency.',
+      paletteName: 'Gold, Silver & White',
+      palette: [
+        {name:'Gold', en:'黃金', hex:'#FFD700'},
+        {name:'Pure Gold', en:'純金', hex:'#FFC200'},
+        {name:'Golden', en:'金黃', hex:'#F0C040'},
+        {name:'Deep Gold', en:'深金', hex:'#E8B800'},
+        {name:'Goldenrod', en:'秋麒麟', hex:'#DAA520'},
+        {name:'Bronze', en:'古銅', hex:'#CD7F32'},
+        {name:'Old Gold', en:'舊金', hex:'#C9A84C'},
+        {name:'Amber', en:'琥珀', hex:'#FFBF00'},
+        {name:'Dark Goldenrod', en:'暗金菊', hex:'#B8860B'},
+        {name:'Deep Bronze', en:'深銅', hex:'#7A5C1E'},
+        {name:'Silver', en:'銀色', hex:'#C0C0C0'},
+        {name:'Light Silver', en:'淡銀', hex:'#E8E8E8'},
+        {name:'Ivory', en:'象牙白', hex:'#FFFFF0'},
+        {name:'Floral White', en:'花卉白', hex:'#FFFAF0'},
+        {name:'White Smoke', en:'白煙', hex:'#F5F5F5'},
+        {name:'Platinum', en:'鉑金', hex:'#E5E4E2'},
+        {name:'Dark Gray', en:'暗灰銀', hex:'#A9A9A9'},
+        {name:'Slate Gray', en:'石板灰', hex:'#708090'},
+        {name:'Steel Gray', en:'鋼鐵灰', hex:'#4F4F4F'},
+        {name:'Light Steel Blue', en:'鋼藍銀', hex:'#B0C4DE'}
+      ],
+      items: [
+        {emoji:'💍', text:'Gold or silver jewelry'},
+        {emoji:'🐂', text:'Metal or bronze zodiac figurines (Rat, Monkey, Dragon, Rooster, Ox)'},
+        {emoji:'🔑', text:'Metal keychains or charms'},
+        {emoji:'⚪', text:'Round-shaped accessories or items'}
+      ]
+    },
+    '水': {
+      emoji: '💧',
+      desc: 'Like flowing water, clever and adaptable — quick-thinking and resourceful.',
+      paletteName: 'Blues & Blacks',
+      palette: [
+        {name:'Sky Blue', en:'天藍', hex:'#87CEEB'},
+        {name:'Deep Sky Blue', en:'深天藍', hex:'#00BFFF'},
+        {name:'Dark Turquoise', en:'暗松石', hex:'#00CED1'},
+        {name:'Turquoise', en:'松石藍', hex:'#40E0D0'},
+        {name:'Cyan', en:'青藍', hex:'#00FFFF'},
+        {name:'Royal Blue', en:'皇家藍', hex:'#4169E1'},
+        {name:'Lake Blue', en:'湖水藍', hex:'#4A90D9'},
+        {name:'Dodger Blue', en:'道奇藍', hex:'#1E90FF'},
+        {name:'Azure Blue', en:'蔚藍', hex:'#0080FF'},
+        {name:'Ocean Blue', en:'海洋藍', hex:'#006994'},
+        {name:'Dark Blue', en:'深藍', hex:'#00008B'},
+        {name:'Navy', en:'海軍藍', hex:'#000080'},
+        {name:'Midnight Blue', en:'午夜藍', hex:'#191970'},
+        {name:'Deep Sea', en:'深海藍', hex:'#1A3A6E'},
+        {name:'Indigo', en:'靛藍', hex:'#4B0082'},
+        {name:'Dark Slate', en:'玄青', hex:'#2C3E50'},
+        {name:'Deep Slate', en:'深玄', hex:'#1A2533'},
+        {name:'Ink Black', en:'墨玄', hex:'#05101F'},
+        {name:'Night Black', en:'夜黑', hex:'#0A0F1A'},
+        {name:'Slate Blue-Black', en:'石板藍黑', hex:'#374151'}
+      ],
+      items: [
+        {emoji:'💍', text:'Gold or silver jewelry'},
+        {emoji:'🐭', text:'Metal-material zodiac figurines (Rat, Monkey, Rooster, Dragon, Ox, Pig)'},
+        {emoji:'⚫', text:'Obsidian jewelry'},
+        {emoji:'🌊', text:'Wave or water-drop shaped items and glassware'}
+      ]
+    }
+  };
+
+  // Randomly pick n unique colors from a palette
+  function pickRandomColors(palette, n) {
+    const arr = [...palette];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.slice(0, n);
+  }
+
+  // Decide text color based on background brightness
+  function isLightColor(hex) {
+    const r = parseInt(hex.substr(1,2),16);
+    const g = parseInt(hex.substr(3,2),16);
+    const b = parseInt(hex.substr(5,2),16);
+    return (r*299 + g*587 + b*114) / 1000 > 190;
+  }
+
+  // Generating cycle: Wood -> Fire -> Earth -> Metal -> Water -> Wood
+  const genOrder = ['木','火','土','金','水'];
+  // Overcoming cycle: Wood -> Earth -> Water -> Fire -> Metal -> Wood
+  const koeOrder = ['木','土','水','火','金'];
+
+  const categoryMeta = {
+    wealth: {title:'Wealth Luck', icon:'💰'},
+    career: {title:'Career Luck', icon:'💼'},
+    study:  {title:'Study/Exam Luck', icon:'📚'},
+    overall:{title:'Overall Boost', icon:'✨'}
+  };
+
+  // Calculate the Day Master heavenly stem index (0~9)
+  function calcDayStemIndex(year, month, day) {
+    const a = Math.floor((14 - month) / 12);
+    const y = year + 4800 - a;
+    const m = month + 12 * a - 3;
+    const jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y
+      + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+    return ((jdn + 9) % 10 + 10) % 10;
+  }
+
+  function getTargets(element, category) {
+    const gi = genOrder.indexOf(element);
+    const ki = koeOrder.indexOf(element);
+    switch (category) {
+      case 'wealth': // what you overcome
+        return [{ el: koeOrder[(ki + 1) % 5], label: 'Direct & Indirect Wealth' }];
+      case 'career': // what overcomes you
+        return [{ el: koeOrder[(ki + 4) % 5], label: 'Direct Officer & Seven Killings' }];
+      case 'study': // what you generate
+        return [{ el: genOrder[(gi + 1) % 5], label: 'Eating God & Hurting Officer' }];
+      case 'overall': // what generates you + same element
+        return [
+          { el: genOrder[(gi + 4) % 5], label: 'Direct & Indirect Resource' },
+          { el: element, label: 'Companion & Rob Wealth' }
+        ];
+    }
+  }
+
+  // ---- UI interaction ----
+  const dateInput = document.getElementById('birthdate');
+  const options = document.querySelectorAll('.option');
+  const submitBtn = document.getElementById('submitBtn');
+  const resultEl = document.getElementById('result');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let selectedCategory = null;
+
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      options.forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      selectedCategory = opt.dataset.value;
+      checkReady();
+    });
+  });
+
+  function checkReady() {
+    submitBtn.disabled = !(dateInput.value && selectedCategory);
+  }
+  dateInput.addEventListener('change', checkReady);
+
+  submitBtn.addEventListener('click', () => {
+    const [year, month, day] = dateInput.value.split('-').map(Number);
+    const stemIndex = calcDayStemIndex(year, month, day);
+    const stemName = stems[stemIndex];
+    const element = stemElement[stemIndex];
+    const data = elementData[element];
+
+    document.getElementById('rEmoji').textContent = data.emoji;
+    document.getElementById('rStem').textContent = `${stemName} ${elementEnName[element]}`;
+    document.getElementById('rDesc').textContent = data.desc;
+
+    const targets = getTargets(element, selectedCategory);
+    const meta = categoryMeta[selectedCategory];
+
+    const targetsContainer = document.getElementById('targets');
+    targetsContainer.innerHTML = '';
+
+    const heading = document.createElement('div');
+    heading.style.fontWeight = '900';
+    heading.style.fontSize = '15px';
+    heading.style.marginBottom = '12px';
+    heading.textContent = `${meta.icon} To boost your "${meta.title}", here are your recommended lucky colors and items:`;
+    targetsContainer.appendChild(heading);
+
+    function renderHighlights(container, tData) {
+      container.innerHTML = '';
+      pickRandomColors(tData.palette, 3).forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'color-card';
+        const textColor = isLightColor(c.hex) ? '#5A4A42' : '#FFFFFF';
+        card.innerHTML = `
+          <div class="block" style="background:${c.hex}">
+            <span class="cname" style="color:${textColor}">${c.name}</span>
+          </div>
+          <div class="meta">
+            <span class="cen">${c.en}</span>
+            <span class="chex">${c.hex}</span>
+          </div>`;
+        container.appendChild(card);
+      });
+    }
+
+    targets.forEach(t => {
+      const tData = elementData[t.el];
+      const block = document.createElement('div');
+      block.className = 'target-block';
+
+      const tag = document.createElement('div');
+      tag.className = 'ten-god';
+      tag.textContent = `Ten Gods match: ${t.label} (Element: ${elementEnName[t.el]})`;
+      block.appendChild(tag);
+
+      const paletteName = document.createElement('div');
+      paletteName.className = 'palette-name';
+      paletteName.textContent = `Recommended palette: ${tData.paletteName}`;
+      block.appendChild(paletteName);
+
+      const miniStrip = document.createElement('div');
+      miniStrip.className = 'mini-palette';
+      tData.palette.forEach(c => {
+        const seg = document.createElement('span');
+        seg.style.background = c.hex;
+        seg.title = `${c.name} ${c.en} ${c.hex}`;
+        miniStrip.appendChild(seg);
+      });
+      block.appendChild(miniStrip);
+
+      const highlights = document.createElement('div');
+      highlights.className = 'color-highlights';
+      renderHighlights(highlights, tData);
+      block.appendChild(highlights);
+
+      const reroll = document.createElement('button');
+      reroll.className = 'reroll-btn';
+      reroll.type = 'button';
+      reroll.textContent = '🔀 Shuffle colors';
+      reroll.addEventListener('click', () => renderHighlights(highlights, tData));
+      block.appendChild(reroll);
+
+      const details = document.createElement('details');
+      details.className = 'palette-details';
+      const summary = document.createElement('summary');
+      summary.textContent = `View full "${tData.paletteName}" palette (${tData.palette.length} colors)`;
+      details.appendChild(summary);
+
+      const grid = document.createElement('div');
+      grid.className = 'palette-grid';
+      tData.palette.forEach(c => {
+        const sw = document.createElement('div');
+        sw.className = 'palette-swatch';
+        const textColor = isLightColor(c.hex) ? '#5A4A42' : '#FFFFFF';
+        sw.innerHTML = `
+          <div class="chip" style="background:${c.hex}">
+            <span class="pname" style="color:${textColor}">${c.name}</span>
+          </div>
+          <div class="pmeta">
+            <span class="pen">${c.en}</span>
+            <span class="phex">${c.hex}</span>
+          </div>`;
+        grid.appendChild(sw);
+      });
+      details.appendChild(grid);
+      block.appendChild(details);
+
+      const ul = document.createElement('ul');
+      ul.className = 'items-list';
+      tData.items.forEach(it => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="ie">${it.emoji}</span><span>${it.text}</span>`;
+        ul.appendChild(li);
+      });
+      block.appendChild(ul);
+
+      targetsContainer.appendChild(block);
+    });
+
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  resetBtn.addEventListener('click', () => {
+    resultEl.classList.remove('show');
+    dateInput.value = '';
+    options.forEach(o => o.classList.remove('selected'));
+    selectedCategory = null;
+    checkReady();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>

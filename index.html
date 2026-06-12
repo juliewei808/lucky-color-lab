@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>好運色彩研究室｜五行幸運色測驗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#FFD9E3;
+    --peach:#FFE3CF;
+    --mint:#D7F3EA;
+    --sky:#DCEEFB;
+    --lavender:#E6DEFB;
+    --cream:#FFFBF5;
+    --ink:#5A4A42;
+    --ink-soft:#8C7B72;
+    --shadow: 0 8px 24px rgba(180, 150, 130, 0.18);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Zen Maru Gothic','PingFang TC','Microsoft JhengHei',sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,#FFF6EC 0%, #EAF6F2 50%, #EAF1FB 100%);
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(40px);
+    opacity:0.55;
+    z-index:0;
+  }
+  .blob1{width:280px;height:280px;background:var(--pink);top:-80px;left:-80px;}
+  .blob2{width:340px;height:340px;background:var(--sky);top:120px;right:-120px;}
+  .blob3{width:260px;height:260px;background:var(--mint);bottom:-60px;left:10%;}
+  .blob4{width:220px;height:220px;background:var(--lavender);bottom:80px;right:5%;}
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:640px;
+    margin:0 auto;
+    padding:32px 20px 60px;
+  }
+  header{text-align:center;margin-bottom:24px;}
+  header .icon-row{font-size:36px;margin-bottom:6px;}
+  h1{
+    font-size:28px;
+    font-weight:900;
+    margin:0 0 8px;
+    color:#7A5C52;
+  }
+  header p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:14px;
+    line-height:1.7;
+  }
+
+  .card{
+    background:var(--cream);
+    border-radius:28px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:20px;
+  }
+  .card h2{
+    font-size:18px;
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  label.field-label{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:#7A5C52;
+  }
+  input[type="date"]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:16px;
+    border:2px solid #F0E4DA;
+    font-family:inherit;
+    font-size:16px;
+    color:var(--ink);
+    background:#fff;
+  }
+  input[type="date"]:focus{outline:none;border-color:#FFC2D1;}
+
+  .options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:16px;
+  }
+  .option{
+    border:2px solid #F0E4DA;
+    background:#fff;
+    border-radius:18px;
+    padding:14px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    user-select:none;
+  }
+  .option .emoji{font-size:26px;display:block;margin-bottom:6px;}
+  .option .label{font-size:14px;font-weight:700;}
+  .option .sub{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .option:hover{transform:translateY(-2px);}
+  .option.selected{
+    border-color:#FFC2D1;
+    background:linear-gradient(135deg,#FFF1F5,#FFF8EF);
+    transform:translateY(-2px);
+  }
+
+  .submit-btn{
+    display:block;
+    width:100%;
+    margin-top:20px;
+    padding:16px;
+    border:none;
+    border-radius:999px;
+    background:linear-gradient(135deg,#FFB6C9,#FFD9A0);
+    color:#6B4A3A;
+    font-family:inherit;
+    font-size:17px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(255,182,193,0.5);
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .submit-btn:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 10px 20px rgba(255,182,193,0.6);}
+  .submit-btn:active{transform:translateY(0) scale(0.99);}
+  .submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+
+  /* result */
+  #result{display:none;}
+  #result.show{display:block;animation:fadeUp 0.5s ease;}
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .day-master{
+    text-align:center;
+    padding:18px 0 8px;
+  }
+  .day-master .big-emoji{font-size:48px;display:block;margin-bottom:6px;}
+  .day-master .stem{
+    font-size:30px;
+    font-weight:900;
+    color:#7A5C52;
+  }
+  .day-master .desc{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:6px;
+    line-height:1.7;
+  }
+
+  .divider{
+    border:none;
+    border-top:2px dashed #F0E4DA;
+    margin:18px 0;
+  }
+
+  .target-block{margin-bottom:18px;}
+  .target-block:last-child{margin-bottom:0;}
+  .target-block .ten-god{
+    display:inline-block;
+    font-size:12px;
+    font-weight:700;
+    color:#A1786B;
+    background:#FBEFE8;
+    border-radius:999px;
+    padding:3px 12px;
+    margin-bottom:8px;
+  }
+  .palette-name{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+
+  .mini-palette{
+    display:flex;
+    height:18px;
+    border-radius:9px;
+    overflow:hidden;
+    margin-bottom:14px;
+    border:1px solid rgba(0,0,0,0.05);
+  }
+  .mini-palette span{
+    flex:1;
+  }
+
+  .color-highlights{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .color-card{
+    flex:1;
+    min-width:96px;
+    border-radius:18px;
+    overflow:hidden;
+    border:2px solid rgba(0,0,0,0.05);
+    box-shadow:0 4px 10px rgba(0,0,0,0.06);
+  }
+  .color-card .block{
+    height:64px;
+    display:flex;
+    align-items:flex-end;
+    padding:6px 8px;
+  }
+  .color-card .block .cname{
+    font-size:13px;
+    font-weight:900;
+    line-height:1.3;
+  }
+  .color-card .meta{
+    background:#fff;
+    padding:6px 8px;
+  }
+  .color-card .cen{
+    font-size:10px;
+    color:var(--ink-soft);
+    display:block;
+  }
+  .color-card .chex{
+    font-size:10px;
+    color:var(--ink-soft);
+    font-family:monospace;
+    display:block;
+    margin-top:1px;
+  }
+
+  .reroll-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:10px;
+    padding:7px 16px;
+    border:2px solid #F0E4DA;
+    border-radius:999px;
+    background:#fff;
+    color:#A1786B;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .reroll-btn:hover{background:#FBEFE8;}
+
+  .palette-details{
+    margin-top:12px;
+  }
+  .palette-details summary{
+    cursor:pointer;
+    font-size:12px;
+    font-weight:700;
+    color:#A1786B;
+    list-style:none;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 0;
+  }
+  .palette-details summary::-webkit-details-marker{display:none;}
+  .palette-details summary::before{
+    content:'▸';
+    transition:transform 0.15s ease;
+    display:inline-block;
+  }
+  .palette-details[open] summary::before{
+    transform:rotate(90deg);
+  }
+  .palette-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px 6px;
+    margin-top:10px;
+  }
+  .palette-swatch{
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid rgba(0,0,0,0.05);
+  }
+  .palette-swatch .chip{
+    height:40px;
+    display:flex;
+    align-items:flex-end;
+    padding:4px 6px;
+  }
+  .palette-swatch .pname{
+    font-size:10px;
+    font-weight:700;
+    line-height:1.2;
+  }
+  .palette-swatch .pmeta{
+    background:#fff;
+    padding:3px 6px 5px;
+  }
+  .palette-swatch .pen{
+    font-size:8px;
+    color:var(--ink-soft);
+    display:block;
+  }
+  .palette-swatch .phex{
+    font-size:8px;
+    color:var(--ink-soft);
+    font-family:monospace;
+    display:block;
+  }
+
+  .items-list{
+    list-style:none;
+    padding:0;
+    margin:10px 0 0;
+    display:grid;
+    gap:8px;
+  }
+  .items-list li{
+    background:#fff;
+    border-radius:14px;
+    padding:10px 14px;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1.5px solid #F4EAE2;
+  }
+  .items-list .ie{font-size:18px;}
+
+  .reset-btn{
+    display:block;
+    width:100%;
+    margin-top:22px;
+    padding:13px;
+    border:2px solid #F0E4DA;
+    border-radius:999px;
+    background:#fff;
+    color:#A1786B;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .reset-btn:hover{background:#FBEFE8;}
+
+  footer{
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:10px;
+    line-height:1.8;
+  }
+
+  .lang-switch{
+    text-align:center;
+    margin-bottom:14px;
+    font-size:12px;
+  }
+  .lang-switch a{
+    color:#A1786B;
+    text-decoration:none;
+    font-weight:700;
+    border:2px solid #F0E4DA;
+    background:#fff;
+    border-radius:999px;
+    padding:6px 16px;
+    display:inline-block;
+  }
+  .lang-switch a:hover{background:#FBEFE8;}
+
+  .related-card{text-align:center;}
+  .related-card p{
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.7;
+    margin:0 0 14px;
+  }
+  .related-btn{
+    display:inline-block;
+    padding:12px 28px;
+    border-radius:999px;
+    background:linear-gradient(135deg,var(--lavender),var(--sky));
+    color:#5A4A42;
+    font-weight:700;
+    font-size:14px;
+    text-decoration:none;
+    box-shadow:0 6px 16px rgba(180,150,130,0.18);
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .related-btn:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 10px 20px rgba(180,150,130,0.25);}
+</style>
+</head>
+<body>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="blob blob4"></div>
+
+  <div class="wrap">
+    <div class="lang-switch"><a href="index-en.html">English 🇺🇸</a></div>
+
+    <header>
+      <div class="icon-row">🍀🌈💝</div>
+      <h1>好運色彩研究室</h1>
+      <p>輸入你的生日，找出專屬的「五行屬性」，<br>再依照你最想提升的運勢，挑出今天就能用上的幸運色與幸運小物。</p>
+    </header>
+
+    <div class="card">
+      <h2>① 你的生日是？</h2>
+      <label class="field-label" for="birthdate">出生年月日（西元）</label>
+      <input type="date" id="birthdate" min="1900-01-01" max="2099-12-31">
+      <p class="hint">小提醒：這裡使用的是「日柱」對應的五行屬性，只需要正確的西元年月日即可，不需要出生時間。</p>
+    </div>
+
+    <div class="card">
+      <h2>② 這次最想補的是哪種運？</h2>
+      <div class="options" id="categoryOptions">
+        <div class="option" data-value="wealth">
+          <span class="emoji">💰</span>
+          <span class="label">財運</span>
+          <span class="sub">求財・進帳</span>
+        </div>
+        <div class="option" data-value="career">
+          <span class="emoji">💼</span>
+          <span class="label">事業運</span>
+          <span class="sub">工作・升遷</span>
+        </div>
+        <div class="option" data-value="study">
+          <span class="emoji">📚</span>
+          <span class="label">考試／讀書運</span>
+          <span class="sub">學習・專注</span>
+        </div>
+        <div class="option" data-value="overall">
+          <span class="emoji">✨</span>
+          <span class="label">整體補運</span>
+          <span class="sub">全面提升</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" disabled>看看我的幸運色 🎨</button>
+    </div>
+
+    <div class="card" id="result">
+      <div class="day-master">
+        <span class="big-emoji" id="rEmoji">🌳</span>
+        <div class="stem" id="rStem">甲木</div>
+        <div class="desc" id="rDesc">像大樹一樣，充滿生命力與成長的力量</div>
+      </div>
+
+      <hr class="divider">
+
+      <div id="targets"></div>
+
+      <button class="reset-btn" id="resetBtn">重新測一次</button>
+    </div>
+
+    <div class="card related-card">
+      <h2>🔮 延伸推薦</h2>
+      <p>幸運色只是開始！想更深入了解你天生的才能傾向與職業潛能嗎？來測一測你的「東方原型天賦」吧～</p>
+      <a class="related-btn" href="https://juliewei808.github.io/bazi-analysis/bazi_homepage_2_2.html" target="_blank" rel="noopener noreferrer">前往東方原型天賦分析 →</a>
+    </div>
+
+    <footer>
+      ※ 本測驗依「日柱天干」推算五行屬性，並以五行生剋對應財／官／食傷／印比關係，<br>
+      結果僅供參考娛樂，幸運色可作為穿搭、配件或居家佈置的小靈感 🌈
+    </footer>
+  </div>
+
+<script>
+  const stems = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  const stemElement = ['木','木','火','火','土','土','金','金','水','水'];
+
+  const elementData = {
+    '木': {
+      emoji: '🌳',
+      desc: '像大樹一樣，充滿生命力，喜歡成長與突破，行動力十足。',
+      paletteName: '青綠色系',
+      palette: [
+        {name:'翠青', en:'Jade Green', hex:'#00A86B'},
+        {name:'海綠', en:'Sea Green', hex:'#2E8B57'},
+        {name:'青綠', en:'Cyan Green', hex:'#4CAF82'},
+        {name:'青色', en:'Teal', hex:'#008080'},
+        {name:'淺青', en:'Light Teal', hex:'#20B2AA'},
+        {name:'嫩綠', en:'Spring Green', hex:'#78C850'},
+        {name:'淡嫩綠', en:'Light Green', hex:'#90EE90'},
+        {name:'草坪綠', en:'Lawn Green', hex:'#7CFC00'},
+        {name:'草綠', en:'Grass Green', hex:'#4DB340'},
+        {name:'黃草綠', en:'GreenYellow', hex:'#ADFF2F'},
+        {name:'竹青', en:'Bamboo', hex:'#6BAF92'},
+        {name:'松綠', en:'Pine Green', hex:'#507D5F'},
+        {name:'蒼青', en:'Sage', hex:'#5F8575'},
+        {name:'暗海綠', en:'Dark Sea Green', hex:'#8FBC8F'},
+        {name:'中海綠', en:'Medium Green', hex:'#3CB371'},
+        {name:'森林綠', en:'Forest Green', hex:'#3A7D44'},
+        {name:'林綠', en:'Forest', hex:'#228B22'},
+        {name:'墨綠', en:'Dark Green', hex:'#1B4332'},
+        {name:'暗綠', en:'Dark Green', hex:'#006400'},
+        {name:'極深綠', en:'Jungle', hex:'#0D3320'}
+      ],
+      items: [
+        {emoji:'📿', text:'木頭串珠飾品'},
+        {emoji:'🪑', text:'木製家具'},
+        {emoji:'🐉', text:'木頭材質的生肖擺飾（龍、鼠、虎、兔、羊、豬）'},
+        {emoji:'🪴', text:'室內植栽、小盆栽（黃金葛、萬年青等）'},
+        {emoji:'📗', text:'綠色系文具、筆記本或服飾配件'}
+      ]
+    },
+    '火': {
+      emoji: '🔥',
+      desc: '像陽光一樣，熱情開朗、充滿能量，常是人群中的焦點。',
+      paletteName: '赤色系',
+      palette: [
+        {name:'正紅', en:'Pure Red', hex:'#FF0000'},
+        {name:'朱紅', en:'Vermillion', hex:'#E34234'},
+        {name:'緋紅', en:'Crimson', hex:'#DC143C'},
+        {name:'烈焰紅', en:'Scarlet', hex:'#FF2400'},
+        {name:'丹紅', en:'Dan Red', hex:'#CC0000'},
+        {name:'暗紅', en:'Dark Red', hex:'#8B0000'},
+        {name:'栗紅', en:'Maroon', hex:'#800000'},
+        {name:'葡萄酒', en:'Wine Red', hex:'#722F37'},
+        {name:'胭脂紅', en:'Carmine', hex:'#9B1B30'},
+        {name:'血石紅', en:'Oxblood', hex:'#5C0120'},
+        {name:'橙紅', en:'OrangeRed', hex:'#FF4500'},
+        {name:'火焰橙', en:'Flame', hex:'#FF6B35'},
+        {name:'深橙', en:'Dark Orange', hex:'#FF8C00'},
+        {name:'琥珀橙', en:'Amber', hex:'#FF9A00'},
+        {name:'珊瑚橙', en:'Deep Coral', hex:'#FF7043'},
+        {name:'品紅', en:'Magenta', hex:'#C2185B'},
+        {name:'玫瑰紅', en:'Rose Red', hex:'#E8436B'},
+        {name:'胭脂', en:'Rouge', hex:'#C0143C'},
+        {name:'深粉紅', en:'Deep Pink', hex:'#FF1493'},
+        {name:'牡丹紅', en:'Peony', hex:'#AD1457'}
+      ],
+      items: [
+        {emoji:'🧿', text:'珊瑚、琥珀、玉石、蜜蠟飾品'},
+        {emoji:'📿', text:'木頭串珠飾品'},
+        {emoji:'🐴', text:'木頭材質的生肖擺飾（馬、虎、狗、兔、羊、蛇）'},
+        {emoji:'🕯️', text:'紅色蠟燭、香氛或燈具'},
+        {emoji:'🔺', text:'三角形、尖角造型的飾品或擺件'}
+      ]
+    },
+    '土': {
+      emoji: '⛰️',
+      desc: '像大地一樣，穩重踏實、值得信賴，是大家依靠的後盾。',
+      paletteName: '黃褐色系',
+      palette: [
+        {name:'土黃', en:'Earth Yellow', hex:'#E8B84B'},
+        {name:'正黃', en:'Pure Yellow', hex:'#F5C842'},
+        {name:'薑黃', en:'Turmeric', hex:'#D4A017'},
+        {name:'麥黃', en:'Wheat Gold', hex:'#C9A84C'},
+        {name:'卡其黃', en:'Khaki', hex:'#F0E68C'},
+        {name:'赭褐', en:'Sienna', hex:'#A0522D'},
+        {name:'鞍棕', en:'Saddle Brown', hex:'#8B4513'},
+        {name:'赤陶', en:'Terracotta', hex:'#C4922A'},
+        {name:'巧克力', en:'Chocolate', hex:'#D2691E'},
+        {name:'駝色', en:'Camel', hex:'#BC8A5F'},
+        {name:'小麥色', en:'Wheat', hex:'#F5DEB3'},
+        {name:'古董白', en:'Antique White', hex:'#FAEBD7'},
+        {name:'莫卡辛', en:'Moccasin', hex:'#FFE4B5'},
+        {name:'原木', en:'Burlywood', hex:'#DEB887'},
+        {name:'棕褐沙', en:'Tan', hex:'#D2B48C'},
+        {name:'深泥褐', en:'Dark Mud', hex:'#5A3A0A'},
+        {name:'岩褐', en:'Rock Brown', hex:'#4A3000'},
+        {name:'栗色', en:'Chestnut', hex:'#6B4226'},
+        {name:'深棕岩', en:'Dark Rock', hex:'#3D2B1F'},
+        {name:'磚色', en:'Brick', hex:'#795548'}
+      ],
+      items: [
+        {emoji:'💎', text:'珊瑚、琥珀、玉石、蜜蠟、水晶飾品'},
+        {emoji:'🏺', text:'瓷器'},
+        {emoji:'🐎', text:'陶土材質的生肖擺飾（馬、虎、狗、羊、蛇）'},
+        {emoji:'🟫', text:'方形、正方形的收納盒或飾品'},
+        {emoji:'☕', text:'陶瓷杯具、餐具'}
+      ]
+    },
+    '金': {
+      emoji: '⚙️',
+      desc: '像金屬一樣，意志堅定、做事俐落，重視原則與效率。',
+      paletteName: '金白色系',
+      palette: [
+        {name:'黃金', en:'Gold', hex:'#FFD700'},
+        {name:'純金', en:'Pure Gold', hex:'#FFC200'},
+        {name:'金黃', en:'Golden', hex:'#F0C040'},
+        {name:'深金', en:'Deep Gold', hex:'#E8B800'},
+        {name:'秋麒麟', en:'Goldenrod', hex:'#DAA520'},
+        {name:'古銅', en:'Bronze', hex:'#CD7F32'},
+        {name:'舊金', en:'Old Gold', hex:'#C9A84C'},
+        {name:'琥珀', en:'Amber', hex:'#FFBF00'},
+        {name:'暗金菊', en:'Dark Goldenrod', hex:'#B8860B'},
+        {name:'深銅', en:'Deep Bronze', hex:'#7A5C1E'},
+        {name:'銀色', en:'Silver', hex:'#C0C0C0'},
+        {name:'淡銀', en:'Light Silver', hex:'#E8E8E8'},
+        {name:'象牙白', en:'Ivory', hex:'#FFFFF0'},
+        {name:'花卉白', en:'Floral White', hex:'#FFFAF0'},
+        {name:'白煙', en:'White Smoke', hex:'#F5F5F5'},
+        {name:'鉑金', en:'Platinum', hex:'#E5E4E2'},
+        {name:'暗灰銀', en:'Dark Gray', hex:'#A9A9A9'},
+        {name:'石板灰', en:'Slate Gray', hex:'#708090'},
+        {name:'鋼鐵灰', en:'Steel Gray', hex:'#4F4F4F'},
+        {name:'鋼藍銀', en:'Light Steel Blue', hex:'#B0C4DE'}
+      ],
+      items: [
+        {emoji:'💍', text:'金飾、銀飾'},
+        {emoji:'🐂', text:'金屬、銅製材質的生肖擺飾（鼠、猴、龍、雞、牛）'},
+        {emoji:'🔑', text:'金屬鑰匙圈、吊飾'},
+        {emoji:'⚪', text:'圓形造型的小物或配件'}
+      ]
+    },
+    '水': {
+      emoji: '💧',
+      desc: '像流水一樣，聰明靈活、善於應變，腦筋動得很快。',
+      paletteName: '藍黑色系',
+      palette: [
+        {name:'天藍', en:'Sky Blue', hex:'#87CEEB'},
+        {name:'深天藍', en:'Deep Sky Blue', hex:'#00BFFF'},
+        {name:'暗松石', en:'Dark Turquoise', hex:'#00CED1'},
+        {name:'松石藍', en:'Turquoise', hex:'#40E0D0'},
+        {name:'青藍', en:'Cyan', hex:'#00FFFF'},
+        {name:'皇家藍', en:'Royal Blue', hex:'#4169E1'},
+        {name:'湖水藍', en:'Lake Blue', hex:'#4A90D9'},
+        {name:'道奇藍', en:'Dodger Blue', hex:'#1E90FF'},
+        {name:'蔚藍', en:'Azure Blue', hex:'#0080FF'},
+        {name:'海洋藍', en:'Ocean Blue', hex:'#006994'},
+        {name:'深藍', en:'Dark Blue', hex:'#00008B'},
+        {name:'海軍藍', en:'Navy', hex:'#000080'},
+        {name:'午夜藍', en:'Midnight Blue', hex:'#191970'},
+        {name:'深海藍', en:'Deep Sea', hex:'#1A3A6E'},
+        {name:'靛藍', en:'Indigo', hex:'#4B0082'},
+        {name:'玄青', en:'Dark Slate', hex:'#2C3E50'},
+        {name:'深玄', en:'Deep Slate', hex:'#1A2533'},
+        {name:'墨玄', en:'Ink Black', hex:'#05101F'},
+        {name:'夜黑', en:'Night Black', hex:'#0A0F1A'},
+        {name:'石板藍黑', en:'Slate Blue-Black', hex:'#374151'}
+      ],
+      items: [
+        {emoji:'💍', text:'金飾、銀飾'},
+        {emoji:'🐭', text:'金屬材質的生肖擺飾（鼠、猴、雞、龍、牛、豬）'},
+        {emoji:'⚫', text:'黑曜石飾品'},
+        {emoji:'🌊', text:'波浪、水滴造型的小物或玻璃擺件'}
+      ]
+    }
+  };
+
+  // 從色票中隨機抽出 n 個不重複的顏色
+  function pickRandomColors(palette, n) {
+    const arr = [...palette];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.slice(0, n);
+  }
+
+  // 判斷顏色深淺，決定文字顏色（淺色用深字，深色用淺字）
+  function isLightColor(hex) {
+    const r = parseInt(hex.substr(1,2),16);
+    const g = parseInt(hex.substr(3,2),16);
+    const b = parseInt(hex.substr(5,2),16);
+    return (r*299 + g*587 + b*114) / 1000 > 190;
+  }
+
+  // 五行相生順序：木生火、火生土、土生金、金生水、水生木
+  const genOrder = ['木','火','土','金','水'];
+  // 五行相剋順序：木剋土、土剋水、水剋火、火剋金、金剋木
+  const koeOrder = ['木','土','水','火','金'];
+
+  const categoryMeta = {
+    wealth: {title:'財運', icon:'💰'},
+    career: {title:'事業運', icon:'💼'},
+    study:  {title:'考試／讀書運', icon:'📚'},
+    overall:{title:'整體補運', icon:'✨'}
+  };
+
+  // 計算日柱天干（0~9，對應 甲~癸）
+  function calcDayStemIndex(year, month, day) {
+    const a = Math.floor((14 - month) / 12);
+    const y = year + 4800 - a;
+    const m = month + 12 * a - 3;
+    const jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y
+      + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+    return ((jdn + 9) % 10 + 10) % 10;
+  }
+
+  function getTargets(element, category) {
+    const gi = genOrder.indexOf(element);
+    const ki = koeOrder.indexOf(element);
+    switch (category) {
+      case 'wealth': // 我剋者
+        return [{ el: koeOrder[(ki + 1) % 5], label: '正財・偏財' }];
+      case 'career': // 剋我者
+        return [{ el: koeOrder[(ki + 4) % 5], label: '正官・七殺' }];
+      case 'study': // 我生者
+        return [{ el: genOrder[(gi + 1) % 5], label: '食神・傷官' }];
+      case 'overall': // 生我者 + 同我者
+        return [
+          { el: genOrder[(gi + 4) % 5], label: '正印・偏印' },
+          { el: element, label: '比肩・劫財' }
+        ];
+    }
+  }
+
+  // ---- UI 互動 ----
+  const dateInput = document.getElementById('birthdate');
+  const options = document.querySelectorAll('.option');
+  const submitBtn = document.getElementById('submitBtn');
+  const resultEl = document.getElementById('result');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let selectedCategory = null;
+
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      options.forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      selectedCategory = opt.dataset.value;
+      checkReady();
+    });
+  });
+
+  function checkReady() {
+    submitBtn.disabled = !(dateInput.value && selectedCategory);
+  }
+  dateInput.addEventListener('change', checkReady);
+
+  submitBtn.addEventListener('click', () => {
+    const [year, month, day] = dateInput.value.split('-').map(Number);
+    const stemIndex = calcDayStemIndex(year, month, day);
+    const stemName = stems[stemIndex];
+    const element = stemElement[stemIndex];
+    const data = elementData[element];
+
+    document.getElementById('rEmoji').textContent = data.emoji;
+    document.getElementById('rStem').textContent = `${stemName}${element}`;
+    document.getElementById('rDesc').textContent = data.desc;
+
+    const targets = getTargets(element, selectedCategory);
+    const meta = categoryMeta[selectedCategory];
+
+    const targetsContainer = document.getElementById('targets');
+    targetsContainer.innerHTML = '';
+
+    const heading = document.createElement('div');
+    heading.style.fontWeight = '900';
+    heading.style.fontSize = '15px';
+    heading.style.marginBottom = '12px';
+    heading.textContent = `${meta.icon} 為了提升「${meta.title}」，建議的幸運色與幸運物：`;
+    targetsContainer.appendChild(heading);
+
+    function renderHighlights(container, tData) {
+      container.innerHTML = '';
+      pickRandomColors(tData.palette, 3).forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'color-card';
+        const textColor = isLightColor(c.hex) ? '#5A4A42' : '#FFFFFF';
+        card.innerHTML = `
+          <div class="block" style="background:${c.hex}">
+            <span class="cname" style="color:${textColor}">${c.name}</span>
+          </div>
+          <div class="meta">
+            <span class="cen">${c.en}</span>
+            <span class="chex">${c.hex}</span>
+          </div>`;
+        container.appendChild(card);
+      });
+    }
+
+    targets.forEach(t => {
+      const tData = elementData[t.el];
+      const block = document.createElement('div');
+      block.className = 'target-block';
+
+      const tag = document.createElement('div');
+      tag.className = 'ten-god';
+      tag.textContent = `對應十神：${t.label}（五行屬${t.el}）`;
+      block.appendChild(tag);
+
+      const paletteName = document.createElement('div');
+      paletteName.className = 'palette-name';
+      paletteName.textContent = `推薦色系：${tData.paletteName}`;
+      block.appendChild(paletteName);
+
+      const miniStrip = document.createElement('div');
+      miniStrip.className = 'mini-palette';
+      tData.palette.forEach(c => {
+        const seg = document.createElement('span');
+        seg.style.background = c.hex;
+        seg.title = `${c.name} ${c.en} ${c.hex}`;
+        miniStrip.appendChild(seg);
+      });
+      block.appendChild(miniStrip);
+
+      const highlights = document.createElement('div');
+      highlights.className = 'color-highlights';
+      renderHighlights(highlights, tData);
+      block.appendChild(highlights);
+
+      const reroll = document.createElement('button');
+      reroll.className = 'reroll-btn';
+      reroll.type = 'button';
+      reroll.textContent = '🔀 換一組幸運色';
+      reroll.addEventListener('click', () => renderHighlights(highlights, tData));
+      block.appendChild(reroll);
+
+      const details = document.createElement('details');
+      details.className = 'palette-details';
+      const summary = document.createElement('summary');
+      summary.textContent = `查看「${tData.paletteName}」完整色票（共${tData.palette.length}色）`;
+      details.appendChild(summary);
+
+      const grid = document.createElement('div');
+      grid.className = 'palette-grid';
+      tData.palette.forEach(c => {
+        const sw = document.createElement('div');
+        sw.className = 'palette-swatch';
+        const textColor = isLightColor(c.hex) ? '#5A4A42' : '#FFFFFF';
+        sw.innerHTML = `
+          <div class="chip" style="background:${c.hex}">
+            <span class="pname" style="color:${textColor}">${c.name}</span>
+          </div>
+          <div class="pmeta">
+            <span class="pen">${c.en}</span>
+            <span class="phex">${c.hex}</span>
+          </div>`;
+        grid.appendChild(sw);
+      });
+      details.appendChild(grid);
+      block.appendChild(details);
+
+      const ul = document.createElement('ul');
+      ul.className = 'items-list';
+      tData.items.forEach(it => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="ie">${it.emoji}</span><span>${it.text}</span>`;
+        ul.appendChild(li);
+      });
+      block.appendChild(ul);
+
+      targetsContainer.appendChild(block);
+    });
+
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  resetBtn.addEventListener('click', () => {
+    resultEl.classList.remove('show');
+    dateInput.value = '';
+    options.forEach(o => o.classList.remove('selected'));
+    selectedCategory = null;
+    checkReady();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>
